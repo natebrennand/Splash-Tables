@@ -1,4 +1,6 @@
 
+import java.util.Arrays;
+
 class Bucket {
     private int[] keys;
     private int[] values;
@@ -17,13 +19,25 @@ class Bucket {
         return this.occupation == this.keys.length;
     }
 
+    /*  Get
+     *
+     *  @return: the value if found, -1 otherwise
+     */
+    public int get(int key) {
+        int index = Arrays.binarySearch(this.keys, key);
+        if (index > -1) {
+            return this.values[index];
+        }
+        return -1;
+    }
+
     /*  Insert
      *
      *  @param key: key of the key:value being stored
      *  @param value: key of the key:value being stored
      *  @return: true on clean insert, false on overwrite insert
      */
-    public boolean insert(int key, int value) {
+    public boolean set(int key, int value) {
         // still filling bucket
         if (this.hasSpace()) {
             this.keys[occupation] = key;
