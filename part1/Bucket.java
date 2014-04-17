@@ -1,4 +1,3 @@
-
 import java.util.Arrays;
 
 class Bucket {
@@ -19,17 +18,26 @@ class Bucket {
         return this.occupation == this.keys.length;
     }
 
+    /*  Space left
+     *
+     *  @return: slots in the bucket left
+     */
+    public int spaceLeft() {
+        return this.keys.length - this.occupation;
+    }
+
     /*  Get
      *
      *  @return: the value if found, -1 otherwise
      */
     public int get(int key) {
-        //lol change this later plz
-        int index = Arrays.binarySearch(Arrays.sort(Arrays.copyOf(this.keys, this.keys.length)), key);
-        if (index > -1) {
-            return this.values[index];
+        int index = -1;
+        for (int i=0; i<this.keys.length; i++) {
+            if (this.keys[i] == key) {
+                index = i;
+            }
         }
-        return -1;
+        return index;
     }
 
     /*  Insert
@@ -43,6 +51,7 @@ class Bucket {
         if (this.hasSpace()) {
             this.keys[occupation] = key;
             this.values[occupation] = value;
+            this.occupation += 1;
             return true;
         }
 
