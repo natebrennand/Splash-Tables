@@ -24,7 +24,8 @@ class Bucket {
      *  @return: the value if found, -1 otherwise
      */
     public int get(int key) {
-        int index = Arrays.binarySearch(this.keys, key);
+        //lol change this later plz
+        int index = Arrays.binarySearch(Arrays.sort(Arrays.copyOf(this.keys, this.keys.length)), key);
         if (index > -1) {
             return this.values[index];
         }
