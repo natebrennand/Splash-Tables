@@ -1,5 +1,7 @@
 import java.util.Arrays;
 
+import java.lang.String;
+
 class Bucket {
     private int[] keys;
     private int[] values;
@@ -15,7 +17,7 @@ class Bucket {
      *  @return: true if there is space in the bucket
      */
     public boolean hasSpace() {
-        return this.occupation == this.keys.length;
+        return !(this.occupation == this.keys.length);
     }
 
     /*  Space left
@@ -71,6 +73,14 @@ class Bucket {
      */
     public int[] getOldestValues() {
         return new int[]{this.keys[0], this.values[0]};
+    }
+
+    public String toString() {
+        String contents = "";
+        for (int i = 0; i < this.keys.length; i++) {
+            contents += String.format("%d:%d ", this.keys[i], this.values[i]);
+        }
+        return contents;
     }
 }
 
