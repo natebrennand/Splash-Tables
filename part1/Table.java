@@ -1,5 +1,12 @@
 import java.lang.Math;
+import java.lang.String;
+
 import java.util.Random;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /*
  *  Represents a "Splash" hashtable.
@@ -8,10 +15,12 @@ class Table {
     private Bucket[] buckets;       // B, number of elements per hash bucket
     private int numReinsertions;    // R, number of reinsertions before failure
     private Hash hashes;            // Hash generator that creates H hashes given an integer key
+    private String dumpFile;        // Location to dump data
 
-    public Table(int bucketSize, int numReinsertions, int numTableEntries, int numHashes) {
+    public Table(int bucketSize, int numReinsertions, int numTableEntries, int numHashes, String dumpFile) {
         this.numReinsertions = numReinsertions;
-        this.hashes = new Hash(numHashes);
+        this.hashes = new Hash(numHashes, (int)(Math.pow(2, numTableEntries)));
+        this.dumpFile = dumpFile;
 
         int numBuckets = (int)(Math.pow(2, numTableEntries) / bucketSize);
         this.buckets = new Bucket[numBuckets];
@@ -29,7 +38,7 @@ class Table {
     public void insert(int key, int value) {
         // fail if using invalid key
         if (key <= 0) {
-            dump();
+            dump("Invalid key");
         }
 
         // generate hashes for key
@@ -44,13 +53,13 @@ class Table {
         // fail if key already exists
         for (int i=0; i<bucketIndexes.length; i++) {
             if (this.buckets[bucketIndexes[i]].get(key) >= 0) {
-                dump();
+                dump("The key already existed");
             }
         }
 
         // try to insert key, dump table & exit if it fails
         if (!reinsert(key, value, this.numReinsertions)) {
-            dump();
+            dump(String.format("All %d reinsertions were used", this.numReinsertions));
         }
     }
 
@@ -119,8 +128,44 @@ class Table {
         return -1;
     }
 
-    private void dump() {
+    public void BuildFromFile(String filename) {
+        BufferedReader dumpFile = null;
+        try {
+            dumpFile = new BufferedReader(new FileReader(filename));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("Your file does not exist! Please try again.");
+            System.exit(1);
+        }
+
+        try {
+            while (dumpFile.ready()) {
+                String data = dumpFile.readLine();
+                String[] keyValue = data.split(" ");
+                if (keyValue.length != 2) {
+                    System.out.println("INVALID FORMAT: " + data);
+                }
+                this.insert(Integer.parseInt(keyValue[0]), Integer.parseInt(keyValue[1]));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Your file broke! Please try again.");
+            System.exit(1);
+        }
+    }
+
+    public String toString() {
+        String contents = "";
+        for (int i=0; i<this.buckets.length; i++) {
+            contents += String.format("line %d: %s\n", i, this.buckets[i].toString());
+        }
+        return contents;
+    }
+
+    private void dump(String err) {
         // FAIL & DUMP FILE, to be implemented
+        System.out.println(err);
+        System.out.println("Failed to insert\nDumping hash table to file.");
+        System.exit(1);
     }
 }
-
