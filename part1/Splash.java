@@ -1,4 +1,11 @@
+
 import java.lang.Integer;
+import java.util.HashSet;
+import java.util.Set;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
 
 public class Splash {
     public static void printUsuage() {
@@ -11,10 +18,10 @@ public class Splash {
     }
 
     public static void main (String[] args) {
+        // getting configuration
         if (args.length < 5) {
             printUsuage();
         }
-
         int B = -1, R = -1, S = -1, h = -1;
         try {
             B = Integer.parseInt(args[0]);
@@ -36,8 +43,31 @@ public class Splash {
         }
 
         Table splashTable = new Table(B, R, S, h, outputFile);
+        // reading input file
         splashTable.BuildFromFile(inputFile);
 
         System.out.println(splashTable.toString());
+
+        probe(splashTable);
+    }
+
+
+    public static void probe(Table t) {
+        String probe;
+        int key, value;
+        BufferedReader probeInput = new BufferedReader(new InputStreamReader(System.in));
+
+        try {
+            while((probe = probeInput.readLine()) != null) {
+                key = Integer.parseInt(probe);
+                value = t.get(key);
+                if (value > -1) {
+                    System.out.printf("%d %d\n", key, value);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 }

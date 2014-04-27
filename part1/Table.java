@@ -114,13 +114,16 @@ class Table {
     public int get(int key) {
         // generate bucket indexes
         int[] bucketIndexes = this.hashes.Buckets(key);
-        int index = -1;
+        int valIndex = -1;
+        Bucket b;
 
         // check for key
         for (int i=0; i<bucketIndexes.length; i++) {
-            index = this.buckets[bucketIndexes[i]].getIndex(key);
-            if (index > 0) {
-                return this.buckets[bucketIndexes[i]].get(index);
+            b = this.buckets[bucketIndexes[i]];
+
+            valIndex = b.getIndex(key);
+            if (valIndex >= 0) {
+                return b.get(valIndex);
             }
         }
 

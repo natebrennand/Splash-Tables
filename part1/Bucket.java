@@ -31,7 +31,7 @@ class Bucket {
 
     /*  Get Index
      *
-     *  @return: the value if found, -1 otherwise
+     *  @return: the index of the value if found, -1 otherwise
      */
     public int getIndex(int key) {
         int index = -1;
