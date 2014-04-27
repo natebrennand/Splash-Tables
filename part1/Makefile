@@ -16,4 +16,7 @@ default:
 clean:
 	$(RM) *.class
 
+test:
+	java Splash 4 2 9 8 test.txt < probe.txt
+
 .PHONY: clean
