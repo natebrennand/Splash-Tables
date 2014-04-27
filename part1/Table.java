@@ -14,12 +14,14 @@ import java.io.IOException;
 class Table {
     private Bucket[] buckets;       // B, number of elements per hash bucket
     private int numReinsertions;    // R, number of reinsertions before failure
+    private int bucketSize;
     private Hash hashes;            // Hash generator that creates H hashes given an integer key
     private String dumpFile;        // Location to dump data
 
     public Table(int bucketSize, int numReinsertions, int numTableEntries, int numHashes, String dumpFile) {
         this.numReinsertions = numReinsertions;
-        this.hashes = new Hash(numHashes, (int)(Math.pow(2, numTableEntries)));
+        this.bucketSize = bucketSize;
+        this.hashes = new Hash(numHashes, numTableEntries, bucketSize);
         this.dumpFile = dumpFile;
 
         int numBuckets = (int)(Math.pow(2, numTableEntries) / bucketSize);
@@ -41,24 +43,21 @@ class Table {
             dump("Invalid key");
         }
 
-        // generate hashes for key
-        int[] hashes = this.hashes.Hash(key);
+        // generate buckets from hashes for key
+        int[] bucketIndexes = this.hashes.Buckets(key);
 
-        // generate bucket indexes
-        int[] bucketIndexes = new int[hashes.length];
-        for (int i=0; i<hashes.length; i++) {
-            bucketIndexes[i] = (hashes[i] / hashes.length) % hashes.length;
-        }
+        System.out.printf("%d:%d buckets:[%d, %d]\n", key, value, bucketIndexes[0], bucketIndexes[1]);
+
 
         // fail if key already exists
         for (int i=0; i<bucketIndexes.length; i++) {
-            if (this.buckets[bucketIndexes[i]].get(key) >= 0) {
+            if (this.buckets[bucketIndexes[i]].getIndex(key) >= 0) {
                 dump("The key already existed");
             }
         }
 
-        // try to insert key, dump table & exit if it fails
-        if (!reinsert(key, value, this.numReinsertions)) {
+        // try to insert key, if it fails: dump table & exit
+        if (!reinsert(key, value, this.numReinsertions)) { // called recursively
             dump(String.format("All %d reinsertions were used", this.numReinsertions));
         }
     }
@@ -73,34 +72,31 @@ class Table {
      */
     private boolean reinsert(int key, int value, int triesLeft) {
         triesLeft -= 1; // decrement for using a try
-
-        // generate hashes for key
-        int[] hashes = this.hashes.Hash(key);
+        Random r = new Random();
 
         // generate bucket indexes
-        int[] bucketIndexes = new int[hashes.length];
-        for (int i=0; i<hashes.length; i++) {
-            bucketIndexes[i] = (hashes[i] / hashes.length) % hashes.length;
-        }
+        int[] bucketIndexes = this.hashes.Buckets(key);
 
         // find emptiest bucket, default to a random bucket
-        Random r = new Random();
-        int bucketIndex = r.nextInt(bucketIndexes.length), bucketSpace = 0, spaceLeft;
+        int bucketIndex = bucketIndexes[r.nextInt(bucketIndexes.length)],
+            bucketSpace = 0,
+            spaceLeft;
         for (int i=0; i<bucketIndexes.length; i++) {
             spaceLeft = this.buckets[bucketIndexes[i]].spaceLeft();
             if (spaceLeft > bucketSpace) {
-                bucketIndex = i;
+                bucketIndex = bucketIndexes[i];
                 bucketSpace = spaceLeft;
             }
         }
 
-        // finish if space is available
+        // if space is available: insert and finish
         if (this.buckets[bucketIndex].hasSpace()) {
+            System.out.println("Has space!");
             this.buckets[bucketIndex].set(key, value);
             return true;
         }
 
-        // recall reinsert if there are tries left
+        // call reinsert if there are tries left
         if (triesLeft > 0) {
             int[] evictedPair = this.buckets[bucketIndex].getOldestValues();
             this.buckets[bucketIndex].set(key, value);
@@ -116,15 +112,18 @@ class Table {
      *  @return: value (>0) if exists, -1 otherwise
      */
     public int get(int key) {
-        int bucketIndex, value;
-        int[] hashes = this.hashes.Hash(key);
-        for (int i=0; i<hashes.length; i++) {
-            bucketIndex = (hashes[0] / hashes.length) % hashes.length;
-            value = this.buckets[bucketIndex].get(key);
-            if (value > 0) {
-                return value;
+        // generate bucket indexes
+        int[] bucketIndexes = this.hashes.Buckets(key);
+        int index = -1;
+
+        // check for key
+        for (int i=0; i<bucketIndexes.length; i++) {
+            index = this.buckets[bucketIndexes[i]].getIndex(key);
+            if (index > 0) {
+                return this.buckets[bucketIndexes[i]].get(index);
             }
         }
+
         return -1;
     }
 
