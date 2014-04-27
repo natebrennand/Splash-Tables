@@ -1,5 +1,5 @@
-import java.util.Arrays;
 
+import java.util.Arrays;
 import java.lang.String;
 
 class Bucket {
@@ -10,6 +10,7 @@ class Bucket {
     public Bucket (int size) {
         this.keys = new int[size];
         this.values = new int[size];
+        this.occupation = 0;
     }
 
     /*  Has Space
@@ -28,11 +29,11 @@ class Bucket {
         return this.keys.length - this.occupation;
     }
 
-    /*  Get
+    /*  Get Index
      *
      *  @return: the value if found, -1 otherwise
      */
-    public int get(int key) {
+    public int getIndex(int key) {
         int index = -1;
         for (int i=0; i<this.keys.length; i++) {
             if (this.keys[i] == key) {
@@ -40,6 +41,10 @@ class Bucket {
             }
         }
         return index;
+    }
+
+    public int get(int index) {
+        return this.values[index];
     }
 
     /*  Insert
