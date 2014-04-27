@@ -1,0 +1,22 @@
+CC = gcc
+INCLUDES = 
+CFLAGS = -g -Wall $(INCLUDES)
+LDFLAGS = -g
+LDLIBS = -lm
+
+default: probe
+
+probe: probe.o splash.o simd.o
+
+probe.o: probe.c splash.h
+
+splash.o: splash.c simd.h
+
+simd.o: simd.c simd.h
+
+.PHONY: clean
+clean:
+	rm -f *.o a.out core probe
+
+.PHONY: all
+all: clean probe
