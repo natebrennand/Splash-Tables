@@ -127,6 +127,10 @@ class Table {
         return -1;
     }
 
+    /*  Build From File
+     *
+     *  Rebuilds the table from an input file of key:value pairs
+     */
     public void BuildFromFile(String filename) {
         BufferedReader dumpFile = null;
         try {
@@ -153,18 +157,26 @@ class Table {
         }
     }
 
+    /*  Dump
+     *
+     *  Creates a dump file (if specified on CLI) with the contents of the table
+     */
+    private void dump(String err) {
+        // FAIL & DUMP FILE, to be implemented
+        System.out.println(err);
+        System.out.println("Failed to insert\nDumping hash table to file.");
+        System.exit(1);
+    }
+
+    /*  To String
+     *
+     *  @return: String representation of table for debugging purposes
+     */
     public String toString() {
         String contents = "";
         for (int i=0; i<this.buckets.length; i++) {
             contents += String.format("line %d: %s\n", i, this.buckets[i].toString());
         }
         return contents;
-    }
-
-    private void dump(String err) {
-        // FAIL & DUMP FILE, to be implemented
-        System.out.println(err);
-        System.out.println("Failed to insert\nDumping hash table to file.");
-        System.exit(1);
     }
 }

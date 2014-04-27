@@ -43,6 +43,10 @@ class Bucket {
         return index;
     }
 
+    /* Get
+     *
+     * @return: value of the index for this bucket
+     */
     public int get(int index) {
         return this.values[index];
     }
@@ -80,6 +84,10 @@ class Bucket {
         return new int[]{this.keys[0], this.values[0]};
     }
 
+    /* To String
+     *
+     * @return: String representation of bucket for debugging purposes
+     */
     public String toString() {
         String contents = "";
         for (int i = 0; i < this.keys.length; i++) {

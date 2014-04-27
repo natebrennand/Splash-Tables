@@ -21,21 +21,22 @@ class Hash {
         this.bucketSize = bucketSize;
     }
 
+    /*  Hash
+     *
+     *  @return: int array of the 'h' hashes for this key
+     */
     private int[] Hash(int key) {
-        // TODO: return a array of multiplicative hashes
-        //       should use all of the hash multipliers
-        /* hash(x) = ((M * x) mod 2^w)/2^(w-d)
-         * w = bit size of integers (assumed to be 32)
-         * M = hash multiplier
-         * d = high order bits (chosen to be 8)
-        */
         int[] hashes = new int[this.hashMultipliers.length];
         for(int i=0; i<hashes.length; i++) {
-            hashes[i] = (int)(hashFn(key, this.hashMultipliers[i])) >>> (32-this.size);
+            hashes[i] = hashFn(key, this.hashMultipliers[i]) >>> (31-this.size);
         }
         return hashes;
     }
 
+    /*  Buckets
+     *
+     *  @return: int arrray of 'h' buckets that the key is allowed to be inserted into
+     */
     public int[] Buckets(int key) {
         int[] hashes = this.Hash(key);
         int[] buckets = new int[hashes.length];
@@ -47,13 +48,16 @@ class Hash {
         return buckets;
     }
 
-    private double hashFn(int key, int multiplier) {
-        /*
-         * floor(m * frac(k*a))
+    /*  Hash Function
+     *  Multiplicative hashing function
+     *
+     *  @return: hash for an integer given the specified multiplier
+     */
+    private int hashFn(int key, int multiplier) {
+        /* floor(m * frac(k*a))
          * k: integer hash code
          * a: real number
          * frac: fn that returns the fractional part of a real number
-         *
          */
         double hashIndex = ((multiplier * key) % Math.pow(2, 32));
         return Math.abs((int)(Math.floor(hashIndex)));
