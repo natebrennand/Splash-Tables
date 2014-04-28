@@ -7,6 +7,8 @@ class Bucket {
     private int occupation;
     private int size;
 
+    private int[] MASKS = new int[]{0b00000000, 0b11111111};
+
     public Bucket (int size) {
         this.keyValue = new int[2 * size];
         this.occupation = 0;
@@ -27,24 +29,24 @@ class Bucket {
         return this.size - this.occupation;
     }
 
-    /*  Get Index
-     *  @return: the index of the value if found, -1 otherwise
-     */
-    public int getIndex(int key) {
-        for (int i=0; i<this.size; i++) {
-            if (this.keyValue[i] == key) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     /*  Get
-     *  @return: value of the index for this bucket
+     *  @return: value associated with the key, otherwise 0
      */
-    public int get(int index) {
-        int arrIndex = this.size + index;
-        return this.keyValue[arrIndex];
+    public int get(int key) {
+        int value = 0,
+            iterKey = 0,
+            iterValue = 0,
+            mask;
+
+        for (int i=0; i<this.size; i++) {
+            iterKey = this.keyValue[i];
+            iterValue = this.keyValue[i + this.size];
+
+            mask = MASKS[(key == iterKey)? 1 : 0];
+            value = value | (mask & iterValue);
+        }
+
+        return value;
     }
 
     /*  Insert

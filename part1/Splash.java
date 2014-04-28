@@ -53,8 +53,6 @@ public class Splash {
         probe(splashTable);
     }
 
-
-
     /*  Build From File
      *
      *  Rebuilds the table from an input file of key:value pairs
@@ -85,7 +83,11 @@ public class Splash {
         }
     }
 
-
+    /*  Probe
+     *
+     *  Searches the Splashtable for the key:value pair specified by the key received by stdin
+     *  Prints key:value pairs to stdout in the form: "<k> <v>", the value can be 0 if the key is not found.
+     */
     public static void probe(Table t) {
         String probe;
         int key, value;
@@ -95,9 +97,7 @@ public class Splash {
             while((probe = probeInput.readLine()) != null) {
                 key = Integer.parseInt(probe);
                 value = t.get(key);
-                if (value > -1) {
-                    System.out.printf("%d %d\n", key, value);
-                }
+                System.out.printf("%d %d\n", key, value);
             }
         } catch (IOException e) {
             e.printStackTrace();

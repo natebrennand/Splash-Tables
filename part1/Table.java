@@ -41,7 +41,7 @@ class Table {
         int[] bucketIndexes = this.hashes.Buckets(key);
         // fail if key already exists
         for (int index: bucketIndexes) {
-            if (this.buckets[index].getIndex(key) >= 0) {
+            if (this.buckets[index].get(key) > 0) {
                 dump("The key already existed");
             }
         }
@@ -93,24 +93,22 @@ class Table {
     /*  Get
      *
      *  @param: integer key
-     *  @return: value (>0) if exists, -1 otherwise
+     *  @return: value (>0) if exists, 0 otherwise
      */
     public int get(int key) {
         // generate bucket indexes
         int[] bucketIndexes = this.hashes.Buckets(key);
-        int valIndex = -1;
-        Bucket b;
+        int valIndex = -1,
+            value = 0,
+            index;
 
         // check for key
-        for (int index: bucketIndexes) {
-            b = this.buckets[index];
-            valIndex = b.getIndex(key);
-            if (valIndex >= 0) {
-                return b.get(valIndex);
-            }
+        for (int i=0; i<bucketIndexes.length; i++) {
+            index = bucketIndexes[i];
+            value |= this.buckets[index].get(key);
         }
 
-        return -1;
+        return value;
     }
 
     /*  Dump
