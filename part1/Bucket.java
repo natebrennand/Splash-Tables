@@ -96,7 +96,7 @@ class Bucket {
     public String toDumpFileString() {
         String contents = "";
         for (int i = 0; i < this.size; i++) {
-            contents += String.format("%d:%d\n", this.keyValue[i], this.keyValue[this.size + i]);
+            contents += String.format("%d %d\n", this.keyValue[i], this.keyValue[this.size + i]);
         }
         return contents;
     }

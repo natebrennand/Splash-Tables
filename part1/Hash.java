@@ -14,7 +14,7 @@ class Hash {
     public Hash(int numHashes, int size, int bucketSize) {
         hashMultipliers = new int[numHashes];
         for (int i=0; i<numHashes; i++) {
-            this.hashMultipliers[i] = (int)(Math.random() * Integer.MAX_VALUE/2) + Integer.MAX_VALUE/2;
+             this.hashMultipliers[i] = (int)(Math.random() * Integer.MAX_VALUE);
         }
         this.size = size;
         this.bucketSize = bucketSize;
@@ -49,12 +49,12 @@ class Hash {
     /*  Get Multipliers
      *  @return: string of multipliers used by the hash function
      */
-    public int[] getMultipliersStr() {
+    public String getMultipliersStr() {
         String multiplierStr = String.format("%d", this.hashMultipliers[0]);
         for (int i=1; i<this.hashMultipliers.length; i++) {
             multiplierStr += String.format(" %d", this.hashMultipliers[i]);
         }
-        return this.hashMultipliers;
+        return multiplierStr;
     }
 }
 
