@@ -3,36 +3,36 @@ import java.util.Arrays;
 import java.lang.String;
 
 class Bucket {
-    private int[] keys;
-    private int[] values;
+    private int[] keyValue;
     private int occupation;
+    private int size;
 
     public Bucket (int size) {
-        this.keys = new int[size];
-        this.values = new int[size];
+        this.keyValue = new int[2 * size];
         this.occupation = 0;
+        this.size = size;
     }
 
     /*  Has Space
      *  @return: true if there is space in the bucket
      */
     public boolean hasSpace() {
-        return !(this.occupation == this.keys.length);
+        return !(this.occupation == this.size);
     }
 
     /*  Space left
      *  @return: slots in the bucket left
      */
     public int spaceLeft() {
-        return this.keys.length - this.occupation;
+        return this.size - this.occupation;
     }
 
     /*  Get Index
      *  @return: the index of the value if found, -1 otherwise
      */
     public int getIndex(int key) {
-        for (int i=0; i<this.keys.length; i++) {
-            if (this.keys[i] == key) {
+        for (int i=0; i<this.size; i++) {
+            if (this.keyValue[i] == key) {
                 return i;
             }
         }
@@ -43,7 +43,8 @@ class Bucket {
      *  @return: value of the index for this bucket
      */
     public int get(int index) {
-        return this.values[index];
+        int arrIndex = this.size + index;
+        return this.keyValue[arrIndex];
     }
 
     /*  Insert
@@ -54,38 +55,35 @@ class Bucket {
     public boolean set(int key, int value) {
         // still filling bucket
         if (this.hasSpace()) {
-            this.keys[occupation] = key;
-            this.values[occupation] = value;
+            int keyIndex = occupation,
+                valIndex = occupation + this.size;
+            this.keyValue[keyIndex] = key;
+            this.keyValue[valIndex] = value;
             this.occupation += 1;
             return true;
         }
 
         // if bucket is full, replace oldest value with new value
-        int oldestKey = this.keys[0];
-        int oldestValue = this.values[0];
-        System.arraycopy(this.keys, 0, this.keys, 1, this.keys.length-1);
-        System.arraycopy(this.values, 0, this.values, 1, this.values.length-1);
-        this.keys[0] = key;
-        this.values[0] = value;
+        System.arraycopy(this.keyValue, 0, this.keyValue, 1, this.keyValue.length-1); // shifts left by one
+        this.keyValue[0] = key;
+        this.keyValue[this.size] = value;
         return false;
     }
 
     /*  Get oldest values
-     *
      *  @return: array of oldest key & value
      */
     public int[] getOldestValues() {
-        return new int[]{this.keys[0], this.values[0]};
+        return new int[]{this.keyValue[0], this.keyValue[this.size]};
     }
 
     /* To String
-     *
      * @return: String representation of bucket for debugging purposes
      */
     public String toString() {
         String contents = "";
-        for (int i = 0; i < this.keys.length; i++) {
-            contents += String.format("%d:%d ", this.keys[i], this.values[i]);
+        for (int i = 0; i < this.size; i++) {
+            contents += String.format("%d:%d ", this.keyValue[i], this.keyValue[this.size + i]);
         }
         return contents;
     }
