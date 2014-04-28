@@ -9,5 +9,5 @@ int main (int argc, char *argv[])
 		printf("Usuage:\n\tprobe dumpfile");
 		exit(1);
 	}
-	splashtable(argv[1]);
+	buildSplashtable(argv[1]);
 }

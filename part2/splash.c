@@ -2,26 +2,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+
 #include "splash.h"
 #include "simd.h"
 
+void printSplashTable(struct SplashTable);
 
-const int BUCKET_SIZE = 4,
-	NUM_HASHES = 2;
-
-struct SplashTable
-{
-	int size;	// num elements = 2^size
-	int hashMultipliers[2];
-};
-
-
-int splashtable(char* file)
+struct SplashTable buildSplashtable(char* file)
 {
 	FILE *dumpfile = fopen(file, "r");
 	if (dumpfile == NULL) {
 		printf("Could not open file\n");
-		return(-1);
+		exit(1);
 	}
 
 	int bucketSize, S, numHashes, N;
@@ -33,26 +25,51 @@ int splashtable(char* file)
 		exit(1);
 	}
 
-	int hashnum[2];
-	int totalSize = pow(2, S-1);
-	int keys[totalSize];
-	int payloads[totalSize];
+	struct SplashTable st;
+	st.occupancy = N;
+	st.size = S;
+	st.totalSize = (int)pow(2, S);
+	st.buckets = (Bucket *)malloc(sizeof(Bucket) * st.totalSize / BUCKET_SIZE);
 
-	fscanf(dumpfile, "%d %d", &hashnum[0], &hashnum[1]);
-	for(int i=0;i<totalSize;i++) {
-		fscanf(dumpfile, "%d %d", &(keys[i]), &(payloads[i]));
-	}
+	// scan in hash multipliers
+	fscanf(dumpfile, "%d %d", &(st.hashMultipliers[0]), &(st.hashMultipliers[1]));
 
-	printf("B: %d, S: %d, h: %d, N: %d\n", bucketSize, S, numHashes, N);
-	for(int i=0; i<numHashes; i++) {
-		printf("hash: %d\n", hashnum[i]);
-	}
-	for(int i=0; i<totalSize; i++) {
-		printf("key: %d, payload: %d\n", keys[i], payloads[i]);
-	}
+	Bucket b;
+	int K, V;
+	for(int i=0; i<st.totalSize / BUCKET_SIZE; i++) {
+		int bucketIndex = i;
 
-	return 0;
-	// return probe(hashnum, keys, payloads);
+		for (int j=0; j<BUCKET_SIZE; j++) {
+			int keyIndex = j,
+				valueIndex = j + BUCKET_SIZE;
+
+			if (2 != fscanf(dumpfile, "\n%d %d", &K, &V)) {
+				fprintf(stderr, "broken!\n");
+			}
+
+			b.keyValue[keyIndex] = K;
+			b.keyValue[valueIndex] = V;
+		}
+		st.buckets[bucketIndex] = b;
+	}
 
 	fclose(dumpfile);
+	return st;
+}
+
+void printSplashTable(struct SplashTable st) {
+	// print config
+	printf("B: %d, S: %d, h: %d, N: %d\n", BUCKET_SIZE, st.size, NUM_HASHES, st.occupancy);
+
+	// print hash multipliers
+	for(int i=0; i<NUM_HASHES; i++) {
+		printf("hash: %d\n", st.hashMultipliers[i]);
+	}
+
+	// print key:value pairs
+	for(int i=0; i<pow(2, st.size); i++) {
+		printf("key: %d, payload: %d\n",
+			st.buckets[i / BUCKET_SIZE].keyValue[i % BUCKET_SIZE],
+			st.buckets[i / BUCKET_SIZE].keyValue[(i % BUCKET_SIZE) + BUCKET_SIZE]);
+	}
 }

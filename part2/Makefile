@@ -17,6 +17,9 @@ simd.o: simd.c simd.h
 clean:
 	rm -f *.o a.out core probe
 
-all: clean probe
+test:
+	./probe dumpfile
 
-.PHONY: all clean
+all: clean probe test
+
+.PHONY: all clean test
