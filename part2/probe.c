@@ -11,4 +11,3 @@ int main (int argc, char *argv[])
 	}
 	splashtable(argv[1]);
 }
-
