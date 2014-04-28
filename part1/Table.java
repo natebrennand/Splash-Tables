@@ -3,6 +3,9 @@ import java.lang.String;
 
 import java.util.Random;
 
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+
 /*
  *  Represents a "Splash" hashtable.
  */
@@ -10,12 +13,17 @@ class Table {
     private Bucket[] buckets;       // B, number of elements per hash bucket
     private int numReinsertions;    // R, number of reinsertions before failure
     private int bucketSize;
+    private int numTableEntries;
+    private int numHashes;
     private Hash hashes;            // Hash generator that creates H hashes given an integer key
     private String dumpFile;        // Location to dump data
 
     public Table(int bucketSize, int numReinsertions, int numTableEntries, int numHashes, String dumpFile) {
-        this.numReinsertions = numReinsertions;
         this.bucketSize = bucketSize;
+        this.numReinsertions = numReinsertions;
+        this.numTableEntries = numTableEntries;
+        this.numHashes = numHashes;
+
         this.hashes = new Hash(numHashes, numTableEntries, bucketSize);
         this.dumpFile = dumpFile;
 
@@ -77,7 +85,6 @@ class Table {
         }
         // if space is available: insert and finish
         if (this.buckets[bucketIndex].hasSpace()) {
-            System.out.println("Has space!");
             this.buckets[bucketIndex].set(key, value);
             return true;
         }
@@ -111,15 +118,41 @@ class Table {
         return value;
     }
 
+    private void abortDump(String err) {
+        System.err.println(err);
+        dump(err);
+        System.exit(1);
+    }
+
     /*  Dump
      *
      *  Creates a dump file (if specified on CLI) with the contents of the table
      */
-    private void dump(String err) {
-        // FAIL & DUMP FILE, to be implemented
-        System.out.println(err);
-        System.out.println("Failed to insert\nDumping hash table to file.");
-        System.exit(1);
+    public void dump(String err) {
+
+        if (this.dumpFile != null) {
+            try {
+                PrintWriter dumpFile = new PrintWriter(this.dumpFile);
+
+                dumpFile.println(String.format("%d %d %d %d", this.bucketSize, this.numReinsertions, this.numTableEntries, this.numHashes));
+
+                int[] multipliers = this.hashes.getMultipliers();
+                String multiplierStr = String.format("%d", multipliers[0]);
+                for (int i=1; i<multipliers.length; i++) {
+                    multiplierStr += String.format(" %d", multipliers[i]);
+                }
+                dumpFile.println(multiplierStr);
+
+
+                for (Bucket b: this.buckets) {
+                    dumpFile.print(b.toDumpFileString());
+                }
+
+                dumpFile.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /*  To String
