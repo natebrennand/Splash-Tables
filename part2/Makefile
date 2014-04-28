@@ -1,5 +1,5 @@
 CC = gcc
-INCLUDES = 
+INCLUDES = -msse4a -msse4.1 -msse4.2
 CFLAGS = -g -Wall $(INCLUDES)
 LDFLAGS = -g
 LDLIBS = -lm
