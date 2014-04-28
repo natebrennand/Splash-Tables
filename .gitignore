@@ -1,5 +1,5 @@
 
-# compiled
+# part 1 binaries
 *.class
 
 # test files for part 1
@@ -13,5 +13,7 @@ test2.txt
 *.fdb_latexmk
 *.pdf
 
-
+# part 2 binaries
+probe
+*.o
 
