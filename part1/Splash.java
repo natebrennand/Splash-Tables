@@ -3,9 +3,11 @@ import java.lang.Integer;
 import java.util.HashSet;
 import java.util.Set;
 
-import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.FileReader;
 
 public class Splash {
     public static void printUsuage() {
@@ -44,11 +46,43 @@ public class Splash {
 
         Table splashTable = new Table(B, R, S, h, outputFile);
         // reading input file
-        splashTable.BuildFromFile(inputFile);
+        buildFromFile(splashTable, inputFile);
 
         System.out.println(splashTable.toString());
 
         probe(splashTable);
+    }
+
+
+
+    /*  Build From File
+     *
+     *  Rebuilds the table from an input file of key:value pairs
+     */
+    public static void buildFromFile(Table t, String filename) {
+        BufferedReader dumpFile = null;
+        try {
+            dumpFile = new BufferedReader(new FileReader(filename));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("Your file does not exist! Please try again.");
+            System.exit(1);
+        }
+
+        try {
+            while (dumpFile.ready()) {
+                String data = dumpFile.readLine();
+                String[] keyValue = data.split(" ");
+                if (keyValue.length != 2) {
+                    System.out.println("INVALID FORMAT: " + data);
+                }
+                t.insert(Integer.parseInt(keyValue[0]), Integer.parseInt(keyValue[1]));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Your file broke! Please try again.");
+            System.exit(1);
+        }
     }
 
 
