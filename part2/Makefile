@@ -14,9 +14,9 @@ splash.o: splash.c simd.h
 
 simd.o: simd.c simd.h
 
-.PHONY: clean
 clean:
 	rm -f *.o a.out core probe
 
-.PHONY: all
 all: clean probe
+
+.PHONY: all clean

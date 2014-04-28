@@ -1,13 +1,14 @@
+
 #include <stdio.h>
+#include <stdlib.h>
 #include "splash.h"
 
 int main (int argc, char *argv[])
 {
-	if (argc != 2)
-	{
-		printf( "Error: arguments are incorrect");
+	if (argc != 2) {
+		printf("Usuage:\n\tprobe dumpfile");
+		exit(1);
 	}
-	else {
-		splashtable(argv[1]);
-	}
+	splashtable(argv[1]);
 }
+

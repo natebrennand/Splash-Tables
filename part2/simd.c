@@ -10,6 +10,7 @@
 
 int probe(int *hashMult, int *keys, int *payloads)
 {
+    /*
 	//assume h = 4 & b = 2
 	//lol change this key l8r
 	int key = 59;
@@ -33,5 +34,6 @@ int probe(int *hashMult, int *keys, int *payloads)
 	//simd or
 	//simd or-across
 
+    */
 	return 1;
 }
