@@ -42,20 +42,14 @@ class Table {
         if (key <= 0) {
             dump("Invalid key");
         }
-
         // generate buckets from hashes for key
         int[] bucketIndexes = this.hashes.Buckets(key);
-
-        System.out.printf("%d:%d buckets:[%d, %d]\n", key, value, bucketIndexes[0], bucketIndexes[1]);
-
-
         // fail if key already exists
-        for (int i=0; i<bucketIndexes.length; i++) {
-            if (this.buckets[bucketIndexes[i]].getIndex(key) >= 0) {
+        for (int index: bucketIndexes) {
+            if (this.buckets[index].getIndex(key) >= 0) {
                 dump("The key already existed");
             }
         }
-
         // try to insert key, if it fails: dump table & exit
         if (!reinsert(key, value, this.numReinsertions)) { // called recursively
             dump(String.format("All %d reinsertions were used", this.numReinsertions));
@@ -73,36 +67,31 @@ class Table {
     private boolean reinsert(int key, int value, int triesLeft) {
         triesLeft -= 1; // decrement for using a try
         Random r = new Random();
-
         // generate bucket indexes
         int[] bucketIndexes = this.hashes.Buckets(key);
-
         // find emptiest bucket, default to a random bucket
         int bucketIndex = bucketIndexes[r.nextInt(bucketIndexes.length)],
             bucketSpace = 0,
             spaceLeft;
-        for (int i=0; i<bucketIndexes.length; i++) {
-            spaceLeft = this.buckets[bucketIndexes[i]].spaceLeft();
+        for (int index: bucketIndexes) {
+            spaceLeft = this.buckets[index].spaceLeft();
             if (spaceLeft > bucketSpace) {
-                bucketIndex = bucketIndexes[i];
+                bucketIndex = index;
                 bucketSpace = spaceLeft;
             }
         }
-
         // if space is available: insert and finish
         if (this.buckets[bucketIndex].hasSpace()) {
             System.out.println("Has space!");
             this.buckets[bucketIndex].set(key, value);
             return true;
         }
-
         // call reinsert if there are tries left
         if (triesLeft > 0) {
             int[] evictedPair = this.buckets[bucketIndex].getOldestValues();
             this.buckets[bucketIndex].set(key, value);
             return reinsert(evictedPair[0], evictedPair[1], triesLeft);
         }
-
         return false;
     }
 
@@ -118,9 +107,8 @@ class Table {
         Bucket b;
 
         // check for key
-        for (int i=0; i<bucketIndexes.length; i++) {
-            b = this.buckets[bucketIndexes[i]];
-
+        for (int index: bucketIndexes) {
+            b = this.buckets[index];
             valIndex = b.getIndex(key);
             if (valIndex >= 0) {
                 return b.get(valIndex);
@@ -177,8 +165,10 @@ class Table {
      */
     public String toString() {
         String contents = "";
+        Bucket b;
         for (int i=0; i<this.buckets.length; i++) {
-            contents += String.format("line %d: %s\n", i, this.buckets[i].toString());
+            b = this.buckets[i];
+            contents += String.format("line %d: %s\n", i, b.toString());
         }
         return contents;
     }

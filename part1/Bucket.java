@@ -14,7 +14,6 @@ class Bucket {
     }
 
     /*  Has Space
-     *
      *  @return: true if there is space in the bucket
      */
     public boolean hasSpace() {
@@ -22,7 +21,6 @@ class Bucket {
     }
 
     /*  Space left
-     *
      *  @return: slots in the bucket left
      */
     public int spaceLeft() {
@@ -30,29 +28,25 @@ class Bucket {
     }
 
     /*  Get Index
-     *
      *  @return: the index of the value if found, -1 otherwise
      */
     public int getIndex(int key) {
-        int index = -1;
         for (int i=0; i<this.keys.length; i++) {
             if (this.keys[i] == key) {
-                index = i;
+                return i;
             }
         }
-        return index;
+        return -1;
     }
 
-    /* Get
-     *
-     * @return: value of the index for this bucket
+    /*  Get
+     *  @return: value of the index for this bucket
      */
     public int get(int index) {
         return this.values[index];
     }
 
     /*  Insert
-     *
      *  @param key: key of the key:value being stored
      *  @param value: key of the key:value being stored
      *  @return: true on clean insert, false on overwrite insert

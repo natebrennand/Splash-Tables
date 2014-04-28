@@ -12,10 +12,7 @@ class Hash {
     public Hash(int numHashes, int size, int bucketSize) {
         hashMultipliers = new int[numHashes];
         for (int i=0; i<numHashes; i++) {
-            this.hashMultipliers[i] = (int)(Math.random() * Integer.MAX_VALUE);
-            if (this.hashMultipliers[i] < Integer.MAX_VALUE/2) {
-                i -= 1; // redo hash to ensure it is a high number
-            }
+            this.hashMultipliers[i] = (int)(Math.random() * Integer.MAX_VALUE/2) + Integer.MAX_VALUE/2;
         }
         this.size = size;
         this.bucketSize = bucketSize;
