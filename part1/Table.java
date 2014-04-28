@@ -11,11 +11,12 @@ import java.io.FileNotFoundException;
  *  Represents a "Splash" hashtable.
  */
 class Table {
-    private Bucket[] buckets;       // B, number of elements per hash bucket
-    private int numReinsertions;    // R, number of reinsertions before failure
-    private int bucketSize;
-    private int numTableEntries;
-    private int numHashes;
+    private Bucket[] buckets;       // (2^S)/B Buckets
+    private int numReinsertions,    // R, number of reinsertions before failure
+                bucketSize,         // B, number of elements per hash bucket 
+                numTableEntries,    // total size = 2 ^ numTableEntries
+                numHashes,          // h, number of hash functions being used
+                occupation;         // current occupation of the hash table
     private Hash hashes;            // Hash generator that creates H hashes given an integer key
     private String dumpFile;        // Location to dump data
 
@@ -24,6 +25,7 @@ class Table {
         this.numReinsertions = numReinsertions;
         this.numTableEntries = numTableEntries;
         this.numHashes = numHashes;
+        this.occupation = 0;
 
         this.hashes = new Hash(numHashes, numTableEntries, bucketSize);
         this.dumpFile = dumpFile;
@@ -58,6 +60,8 @@ class Table {
         if (!reinsert(key, value, this.numReinsertions)) { // called recursively
             dump(String.format("All %d reinsertions were used", this.numReinsertions));
         }
+        this.occupation += 1;   // only increment after the insertion successfully completes,
+                                // elements may be shuffled but the occupation will be the same even if a dump occurs
     }
 
     /*  Reinsert
@@ -135,7 +139,7 @@ class Table {
             try {
                 PrintWriter dumpFile = new PrintWriter(this.dumpFile);
 
-                dumpFile.println(String.format("%d %d %d %d", this.bucketSize, this.numReinsertions, this.numTableEntries, this.numHashes));
+                dumpFile.println(String.format("%d %d %d %d", this.bucketSize, this.numTableEntries, this.numHashes, this.occupation));
                 dumpFile.println(this.hashes.getMultipliersStr());
 
                 for (Bucket b: this.buckets) {
