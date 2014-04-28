@@ -45,5 +45,16 @@ class Hash {
         // floor(m * frac(k*a))
         return (long)(multiplier * key >>> (32 - this.size));
     }
+
+    /*  Get Multipliers
+     *  @return: string of multipliers used by the hash function
+     */
+    public int[] getMultipliersStr() {
+        String multiplierStr = String.format("%d", this.hashMultipliers[0]);
+        for (int i=1; i<this.hashMultipliers.length; i++) {
+            multiplierStr += String.format(" %d", this.hashMultipliers[i]);
+        }
+        return this.hashMultipliers;
+    }
 }
 

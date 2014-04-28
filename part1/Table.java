@@ -135,14 +135,7 @@ class Table {
                 PrintWriter dumpFile = new PrintWriter(this.dumpFile);
 
                 dumpFile.println(String.format("%d %d %d %d", this.bucketSize, this.numReinsertions, this.numTableEntries, this.numHashes));
-
-                int[] multipliers = this.hashes.getMultipliers();
-                String multiplierStr = String.format("%d", multipliers[0]);
-                for (int i=1; i<multipliers.length; i++) {
-                    multiplierStr += String.format(" %d", multipliers[i]);
-                }
-                dumpFile.println(multiplierStr);
-
+                dumpFile.println(this.hashes.getMultipliersStr());
 
                 for (Bucket b: this.buckets) {
                     dumpFile.print(b.toDumpFileString());

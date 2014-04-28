@@ -83,9 +83,20 @@ class Bucket {
      * @return: String representation of bucket for debugging purposes
      */
     public String toString() {
+        String contents = String.format("%d:%d", this.keyValue[0], this.keyValue[this.size]);
+        for (int i = 1; i < this.size; i++) {
+            contents += String.format(" %d:%d", this.keyValue[i], this.keyValue[this.size + i]);
+        }
+        return contents;
+    }
+
+    /* To DumpFile String
+     * @return: String representation of bucket for dumpfile purposes
+     */
+    public String toDumpFileString() {
         String contents = "";
         for (int i = 0; i < this.size; i++) {
-            contents += String.format("%d:%d ", this.keyValue[i], this.keyValue[this.size + i]);
+            contents += String.format("%d:%d\n", this.keyValue[i], this.keyValue[this.size + i]);
         }
         return contents;
     }

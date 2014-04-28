@@ -41,14 +41,15 @@ public class Splash {
         String inputFile = args[4], outputFile = null;
         if (args.length == 6) {
             outputFile = args[5];
-            printUsuage();
         }
 
         Table splashTable = new Table(B, R, S, h, outputFile);
         // reading input file
         buildFromFile(splashTable, inputFile);
 
-        System.out.println(splashTable.toString());
+        // System.out.println(splashTable.toString());
+
+        splashTable.dump("TESTING");
 
         probe(splashTable);
     }
