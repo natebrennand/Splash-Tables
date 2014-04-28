@@ -8,6 +8,8 @@ class Hash {
     private int size;               // size of the table, all hashes returned must be in [0, size)
     private int bucketSize;
 
+    private int UNSIGNED_MASK = (int)(Math.pow(2, 32) - 1);
+
 
     public Hash(int numHashes, int size, int bucketSize) {
         hashMultipliers = new int[numHashes];
@@ -18,28 +20,17 @@ class Hash {
         this.bucketSize = bucketSize;
     }
 
-    /*  Hash
-     *
-     *  @return: int array of the 'h' hashes for this key
-     */
-    private int[] Hash(int key) {
-        int[] hashes = new int[this.hashMultipliers.length];
-        for(int i=0; i<hashes.length; i++) {
-            hashes[i] = hashFn(key, this.hashMultipliers[i]) >>> (31-this.size);
-        }
-        return hashes;
-    }
-
     /*  Buckets
      *
      *  @return: int arrray of 'h' buckets that the key is allowed to be inserted into
      */
     public int[] Buckets(int key) {
-        int[] hashes = this.Hash(key);
-        int[] buckets = new int[hashes.length];
+        int[] buckets = new int[this.hashMultipliers.length];
+        long hash;
 
-        for (int i=0; i<hashes.length; i++) {
-            buckets[i] = (hashes[i] / this.bucketSize);
+        for (int i=0; i<buckets.length; i++) {
+            hash = hashFn(key, this.hashMultipliers[i]);
+            buckets[i] = (int)(hash / this.bucketSize);
         }
 
         return buckets;
@@ -50,14 +41,9 @@ class Hash {
      *
      *  @return: hash for an integer given the specified multiplier
      */
-    private int hashFn(int key, int multiplier) {
-        /* floor(m * frac(k*a))
-         * k: integer hash code
-         * a: real number
-         * frac: fn that returns the fractional part of a real number
-         */
-        double hashIndex = ((multiplier * key) % Math.pow(2, 32));
-        return Math.abs((int)(Math.floor(hashIndex)));
+    private long hashFn(int key, int multiplier) {
+        // floor(m * frac(k*a))
+        return (long)(multiplier * key >>> (32 - this.size));
     }
 }
 

@@ -1,13 +1,12 @@
 
 import java.util.Arrays;
 import java.lang.String;
+import java.lang.Math;
 
 class Bucket {
     private int[] keyValue;
     private int occupation;
     private int size;
-
-    private int[] MASKS = new int[]{0b00000000, 0b11111111};
 
     public Bucket (int size) {
         this.keyValue = new int[2 * size];
@@ -42,7 +41,8 @@ class Bucket {
             iterKey = this.keyValue[i];
             iterValue = this.keyValue[i + this.size];
 
-            mask = MASKS[(key == iterKey)? 1 : 0];
+            // no cmp-eq operator...
+            mask = (key == iterKey) ? 0b11111111 : 0b00000000;
             value = value | (mask & iterValue);
         }
 
