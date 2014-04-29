@@ -6,10 +6,41 @@
 #include <smmintrin.h> //SSE4.1
 #include <nmmintrin.h> //SSE4.2
 #include <ammintrin.h> //SSE4A
-#include "probe.h"
 
-int probe(int *hashMult, int *keys, int *payloads)
+#include "probe.h"
+#include "splash.h"
+
+int probe(int key, struct SplashTable st);
+
+void processProbes(struct SplashTable st) {
+	/*
+	 *  Read probes from stdin
+	 *  Output key:value pairs to stdout
+	 *
+	 */
+}
+
+int probe(int key, struct SplashTable st)
 {
+	/*
+	 *  1. get the bucket indexes
+	 * 	  - use "getBuckets()" from hash.h
+	 *
+	 *  2. load the corresponding buckets into the registers
+	 *
+	 *  3. SIMD cmp-eq with the keys
+	 *
+	 *  4. SIMD SIMD and with the payloads
+	 *    - must load the payloads into registers first?
+	 *
+	 * 	5. SIMD OR all results for the bucket together
+	 *
+	 *  6. SIMD OR-ACROSS, OR results from all buckets together
+	 *
+	 *  7. Return the result, either value or 0
+	 */
+
+
     /*
 	//assume h = 4 & b = 2
 	//lol change this key l8r
@@ -37,3 +68,4 @@ int probe(int *hashMult, int *keys, int *payloads)
     */
 	return 1;
 }
+

@@ -11,7 +11,7 @@ main.o: main.c splash.h
 
 hash.o: hash.c splash.h
 
-probe.o: probe.c probe.h
+probe.o: probe.c probe.h splash.h
 
 splash.o: splash.c
 

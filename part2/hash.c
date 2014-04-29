@@ -12,6 +12,8 @@ Index getBuckets(int key, int size)
 	// do some hashing
 	// follow along the java implementation
 
+	// should be done w/ SIMD instructions later
+
 	return i;
 }
 
