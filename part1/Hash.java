@@ -2,6 +2,8 @@
 import java.lang.Math;
 import java.lang.Integer;
 
+import java.util.Random;
+
 class Hash {
 
     private int[] hashMultipliers;  // h, number of random integers for the multiplicative hash fn
@@ -13,8 +15,9 @@ class Hash {
 
     public Hash(int numHashes, int size, int bucketSize) {
         hashMultipliers = new int[numHashes];
+        Random r = new Random();
         for (int i=0; i<numHashes; i++) {
-             this.hashMultipliers[i] = (int)(Math.random() * Integer.MAX_VALUE);
+             this.hashMultipliers[i] = r.nextInt();
         }
         this.size = size;
         this.bucketSize = bucketSize;
