@@ -4,7 +4,6 @@
 #include <math.h>
 
 #include "splash.h"
-#include "simd.h"
 
 void printSplashTable(struct SplashTable);
 
@@ -35,6 +34,7 @@ struct SplashTable buildSplashtable(char* file)
 	// scan in hash multipliers
 	fscanf(dumpfile, "%d %d", &(st.hashMultipliers[0]), &(st.hashMultipliers[1]));
 
+	// scan in key:value pairs
 	for(int bucketIndex=0; bucketIndex<st.totalSize / BUCKET_SIZE; bucketIndex++) {
 		Bucket b; // declare new bucket
 		for (int slotIndex=0; slotIndex<BUCKET_SIZE; slotIndex++) {
@@ -77,3 +77,4 @@ void printSplashTable(struct SplashTable st)
 			st.buckets[i / BUCKET_SIZE].keyValue[(i % BUCKET_SIZE) + BUCKET_SIZE]);
 	}
 }
+

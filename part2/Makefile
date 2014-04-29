@@ -4,15 +4,19 @@ CFLAGS = -g -Wall $(INCLUDES)
 LDFLAGS = -g
 LDLIBS = -lm
 
+
+probe: main.o probe.o splash.o hash.o
+
+main.o: main.c splash.h
+
+hash.o: hash.c splash.h
+
+probe.o: probe.c probe.h
+
+splash.o: splash.c
+
+
 default: probe
-
-probe: probe.o splash.o simd.o
-
-probe.o: probe.c splash.h
-
-splash.o: splash.c simd.h
-
-simd.o: simd.c simd.h
 
 clean:
 	rm -f *.o a.out core probe
