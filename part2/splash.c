@@ -8,6 +8,7 @@
 
 void printSplashTable(struct SplashTable);
 
+// given a dumpfile, builds a Splash Table
 struct SplashTable buildSplashtable(char* file)
 {
 	FILE *dumpfile = fopen(file, "r");
@@ -34,30 +35,32 @@ struct SplashTable buildSplashtable(char* file)
 	// scan in hash multipliers
 	fscanf(dumpfile, "%d %d", &(st.hashMultipliers[0]), &(st.hashMultipliers[1]));
 
-	Bucket b;
-	int K, V;
-	for(int i=0; i<st.totalSize / BUCKET_SIZE; i++) {
-		int bucketIndex = i;
-
-		for (int j=0; j<BUCKET_SIZE; j++) {
-			int keyIndex = j,
-				valueIndex = j + BUCKET_SIZE;
-
-			if (2 != fscanf(dumpfile, "\n%d %d", &K, &V)) {
+	for(int bucketIndex=0; bucketIndex<st.totalSize / BUCKET_SIZE; bucketIndex++) {
+		Bucket b; // declare new bucket
+		for (int slotIndex=0; slotIndex<BUCKET_SIZE; slotIndex++) {
+			if (2 != fscanf(dumpfile, "\n%d %d",
+					&(b.keyValue[slotIndex]),
+					&(b.keyValue[slotIndex + BUCKET_SIZE]))) {
 				fprintf(stderr, "broken!\n");
 			}
-
-			b.keyValue[keyIndex] = K;
-			b.keyValue[valueIndex] = V;
 		}
-		st.buckets[bucketIndex] = b;
+		st.buckets[bucketIndex] = b; // assign bucket to malloced space
 	}
-
 	fclose(dumpfile);
+
+	printSplashTable(st);
 	return st;
 }
 
-void printSplashTable(struct SplashTable st) {
+// deallocates memory malloced for the splashtable
+void freeSplashTable(struct SplashTable st)
+{
+	free(st.buckets);
+}
+
+// prints out the info in the splashtable
+void printSplashTable(struct SplashTable st)
+{
 	// print config
 	printf("B: %d, S: %d, h: %d, N: %d\n", BUCKET_SIZE, st.size, NUM_HASHES, st.occupancy);
 
@@ -67,8 +70,9 @@ void printSplashTable(struct SplashTable st) {
 	}
 
 	// print key:value pairs
+	printf("KEY:VALUE\n");
 	for(int i=0; i<pow(2, st.size); i++) {
-		printf("key: %d, payload: %d\n",
+		printf("%d:%d\n",
 			st.buckets[i / BUCKET_SIZE].keyValue[i % BUCKET_SIZE],
 			st.buckets[i / BUCKET_SIZE].keyValue[(i % BUCKET_SIZE) + BUCKET_SIZE]);
 	}
