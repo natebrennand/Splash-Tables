@@ -37,16 +37,20 @@ class Table {
         }
     }
 
+    public float loadFactor() {
+        return (float)(this.occupation / (float)(Math.pow(2, this.numTableEntries)));
+    }
+
     /*  Set
      *  Tries to insert the key value pair into the splash table
      *
      *  @param key: key of the key-value pair being inserted
      *  @param value: value of the key-value pair being inserted
      */
-    public void insert(int key, int value) {
+    public boolean insert(int key, int value) {
         // fail if using invalid key
         if (key <= 0) {
-            dump("Invalid key");
+            abortDump("Invalid key");
         }
         // generate buckets from hashes for key
         int[] bucketIndexes = this.hashes.Buckets(key);
@@ -59,9 +63,11 @@ class Table {
         // try to insert key, if it fails: dump table & exit
         if (!reinsert(key, value, this.numReinsertions)) { // called recursively
             dump(String.format("All %d reinsertions were used", this.numReinsertions));
+            return false;
         }
         this.occupation += 1;   // only increment after the insertion successfully completes,
                                 // elements may be shuffled but the occupation will be the same even if a dump occurs
+        return true;
     }
 
     /*  Reinsert
@@ -79,13 +85,13 @@ class Table {
         int[] bucketIndexes = this.hashes.Buckets(key);
         // find emptiest bucket, default to a random bucket
         int bucketIndex = bucketIndexes[r.nextInt(bucketIndexes.length)],
-            bucketSpace = 0,
+            maxSpace = 0,
             spaceLeft;
         for (int index: bucketIndexes) {
             spaceLeft = this.buckets[index].spaceLeft();
-            if (spaceLeft > bucketSpace) {
+            if (spaceLeft > maxSpace) {
                 bucketIndex = index;
-                bucketSpace = spaceLeft;
+                maxSpace = spaceLeft;
             }
         }
         // if space is available: insert and finish
@@ -134,7 +140,7 @@ class Table {
      *  Creates a dump file (if specified on CLI) with the contents of the table
      */
     public void dump(String err) {
-
+        // System.out.printf("DUMPING SPLASH TABLE, output found in %s.\n", this.dumpFile);
         if (this.dumpFile != null) {
             try {
                 PrintWriter dumpFile = new PrintWriter(this.dumpFile);

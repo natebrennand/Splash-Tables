@@ -7,16 +7,15 @@ RM = rm
 	$(JC) $*.java
 
 CLASSES = \
+		Splash.java \
 		Table.java \
-		Splash.java
+		Bucket.java \
+		Hash.java
 
 default:
 	$(JC) $(CLASSES)
 
 clean:
 	$(RM) *.class
-
-test:
-	java Splash 4 4 7 2 test.txt dump.txt < probe.txt
 
 .PHONY: clean

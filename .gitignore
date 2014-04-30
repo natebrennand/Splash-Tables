@@ -3,8 +3,7 @@
 *.class
 
 # test files for part 1
-dump.txt
-test2.txt
+dump12.txt
 
 # part 1 writeup
 *.aux
@@ -16,4 +15,5 @@ test2.txt
 # part 2 binaries
 probe
 *.o
+
 

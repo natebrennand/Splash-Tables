@@ -13,11 +13,13 @@ class Hash {
     public Hash(int numHashes, int size, int bucketSize) {
         hashMultipliers = new int[numHashes];
         Random r = new Random();
+		int hashValue;
         for (int i=0; i<numHashes; i++) {
-             this.hashMultipliers[i] = r.nextInt();
-             if (this.hashMultipliers[i]%2 != 1) {
-             this.hashMultipliers[i] += 1;
-             }
+            hashValue = r.nextInt();
+            while(hashValue % 2 != 1) { // guarantee odd multipliers
+                hashValue = r.nextInt();
+            }
+            this.hashMultipliers[i] = hashValue;
         }
         this.size = size;
         this.bucketSize = bucketSize;
@@ -44,11 +46,10 @@ class Hash {
      *  @return: hash for an integer given the specified multiplier
      */
     private long hashFn(int key, int multiplier) {
-        // floor(m * frac(k*a))
         return (long)(multiplier * key >>> (32 - this.size));
     }
 
-    /*  Get Multipliers
+    /*  Get Multipliers String
      *  @return: string of multipliers used by the hash function
      */
     public String getMultipliersStr() {
@@ -59,4 +60,3 @@ class Hash {
         return multiplierStr;
     }
 }
-

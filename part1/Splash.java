@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.io.FileReader;
 
 public class Splash {
-    public static void printUsuage() {
-        System.out.println("USUAGE: java Splash B R S h inputfile [dumpfile]"
+    public static void printUsage() {
+        System.out.println("USAGE: java Splash B R S h inputfile [dumpfile]"
                            + "\n\tB: # of elements per bucket"
                            + "\n\tR: # of reinsertions allowed"
                            + "\n\tS: number of elements = 2^S"
@@ -22,7 +22,7 @@ public class Splash {
     public static void main (String[] args) {
         // getting configuration
         if (args.length < 5) {
-            printUsuage();
+            printUsage();
         }
         int B = -1, R = -1, S = -1, h = -1;
         try {
@@ -35,7 +35,7 @@ public class Splash {
         }
 
         if (B <= 0 || R <= 0 || S <= 0 || h <= 0) {
-            printUsuage();
+            printUsage();
         }
 
         String inputFile = args[4], outputFile = null;
@@ -43,14 +43,16 @@ public class Splash {
             outputFile = args[5];
         }
 
+        // build table from input file
         Table splashTable = new Table(B, R, S, h, outputFile);
+
         // reading input file
         buildFromFile(splashTable, inputFile);
 
-        // System.out.println(splashTable.toString());
+        // Load factor stats
+        System.out.printf("%f\n", splashTable.loadFactor());
 
-        splashTable.dump("TESTING");
-
+        // Accept probe file input
         probe(splashTable);
     }
 
@@ -75,8 +77,11 @@ public class Splash {
                 if (keyValue.length != 2) {
                     System.out.println("INVALID FORMAT: " + data);
                 }
-                t.insert(Integer.parseInt(keyValue[0]), Integer.parseInt(keyValue[1]));
+                if (true != t.insert(Integer.parseInt(keyValue[0]), Integer.parseInt(keyValue[1]))) {
+                    break;
+                }
             }
+            dumpFile.close();
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Your file broke! Please try again.");
@@ -98,7 +103,7 @@ public class Splash {
             while((probe = probeInput.readLine()) != null) {
                 key = Integer.parseInt(probe);
                 value = t.get(key);
-                System.out.printf("%d %d\n", key, value);
+                // System.out.printf("%d %d\n", key, value);
             }
         } catch (IOException e) {
             e.printStackTrace();
