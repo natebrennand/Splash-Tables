@@ -12,10 +12,17 @@ CLASSES = \
 		Bucket.java \
 		Hash.java
 
-default:
+default: build
+
+build:
 	$(JC) $(CLASSES)
+
+run:
+	java Splash $(filter-out $@,$(MAKECMDGOALS))
 
 clean:
 	$(RM) *.class
 
-.PHONY: clean
+all: clean build run
+
+.PHONY: clean build run all
