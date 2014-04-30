@@ -10,14 +10,14 @@ class Hash {
     private int size;               // size of the table, all hashes returned must be in [0, size)
     private int bucketSize;
 
-    private int UNSIGNED_MASK = (int)(Math.pow(2, 32) - 1);
-
-
     public Hash(int numHashes, int size, int bucketSize) {
         hashMultipliers = new int[numHashes];
         Random r = new Random();
         for (int i=0; i<numHashes; i++) {
              this.hashMultipliers[i] = r.nextInt();
+             if (this.hashMultipliers[i]%2 != 1) {
+             this.hashMultipliers[i] += 1;
+             }
         }
         this.size = size;
         this.bucketSize = bucketSize;
@@ -30,7 +30,6 @@ class Hash {
     public int[] Buckets(int key) {
         int[] buckets = new int[this.hashMultipliers.length];
         long hash;
-
         for (int i=0; i<buckets.length; i++) {
             hash = hashFn(key, this.hashMultipliers[i]);
             buckets[i] = (int)(hash / this.bucketSize);
