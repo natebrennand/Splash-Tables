@@ -62,31 +62,31 @@ int probe(int key, struct SplashTable st)
 	 */
 
     
-	//simd copy
+	//simd copy - converts 32-bit to 128-bit with key 4 times
 	__m128i new_key = _mm_set1_epi32(key);
 
-	//simd mult
+	//convert each hash multiplier into 128-bit
 	__m128i hmult1 = _mm_cvtsi32_si128(st.hashMultipliers[0]);
 	__m128i hmult2 = _mm_cvtsi32_si128(st.hashMultipliers[1]);
 
-	//getting hashed functions
+	//simd mult - getting hash functions
 	__m128i hash1 = _mm_mul_epi32(new_key, hmult1);
 	__m128i hash2 = _mm_mul_epi32(new_key, hmult2);
 
-	//get table slots
+	//simd shift/mult - getting table slots
 	__m128i tbl_slot1 = _mm_srli_epi32(hash1, 32-st.size);
 	__m128i tbl_slot2 = _mm_srli_epi32(hash2, 32-st.size);
 
-	//get location of buckets
+	//get location of buckets 
 	int loc1 = _mm_cvtsi128_si32(tbl_slot1)/4;
 	int loc2 = _mm_cvtsi128_si32(tbl_slot2)/4;
-	//get buckets
+	//getting buckets & storing them into 128-bit vectors
 	struct Bucket *bkt1 = st.buckets+loc1;
 	__m128i bktvec1 = _mm_set_epi32(bkt1->keyValue[3], bkt1->keyValue[2], bkt1->keyValue[1], bkt1->keyValue[0]);
 	struct Bucket *bkt2 = st.buckets+loc2;
 	__m128i bktvec2 = _mm_set_epi32(bkt2->keyValue[3], bkt2->keyValue[2], bkt2->keyValue[1], bkt2->keyValue[0]);
 
-	//simd cmp-eq
+	//simd cmp-eq between buckets and key
 	__m128i ce1 = _mm_cmpeq_epi32 (bktvec1, new_key);
 	__m128i ce2 = _mm_cmpeq_epi32 (bktvec2, new_key);
 	
@@ -94,7 +94,7 @@ int probe(int key, struct SplashTable st)
 	__m128i payload1 = _mm_set_epi32(bkt1->keyValue[7], bkt1->keyValue[6], bkt1->keyValue[5], bkt1->keyValue[4]);
 	__m128i payload2 = _mm_set_epi32(bkt2->keyValue[7], bkt2->keyValue[6], bkt2->keyValue[5], bkt2->keyValue[4]);
 
-	//simd and
+	//simd and between compare-equal vector and payloads
 	__m128i and1 = _mm_and_si128 (ce1, payload1);
 	__m128i and2 = _mm_and_si128 (ce2, payload2);
 
