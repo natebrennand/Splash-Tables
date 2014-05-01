@@ -33,11 +33,12 @@ struct SplashTable buildSplashtable(char* file)
 
 	// scan in hash multipliers
 	fscanf(dumpfile, "%d %d", &(st.hashMultipliers[0]), &(st.hashMultipliers[1]));
-
+	int bucketIndex;
+	int slotIndex;
 	// scan in key:value pairs
-	for(int bucketIndex=0; bucketIndex<st.totalSize / BUCKET_SIZE; bucketIndex++) {
+	for(bucketIndex=0; bucketIndex<st.totalSize / BUCKET_SIZE; bucketIndex++) {
 		Bucket b; // declare new bucket
-		for (int slotIndex=0; slotIndex<BUCKET_SIZE; slotIndex++) {
+		for (slotIndex=0; slotIndex<BUCKET_SIZE; slotIndex++) {
 			if (2 != fscanf(dumpfile, "\n%d %d",
 					&(b.keyValue[slotIndex]),
 					&(b.keyValue[slotIndex + BUCKET_SIZE]))) {
@@ -48,7 +49,7 @@ struct SplashTable buildSplashtable(char* file)
 	}
 	fclose(dumpfile);
 
-	printSplashTable(st);
+	// printSplashTable(st);
 	return st;
 }
 
@@ -63,15 +64,15 @@ void printSplashTable(struct SplashTable st)
 {
 	// print config
 	printf("B: %d, S: %d, h: %d, N: %d\n", BUCKET_SIZE, st.size, NUM_HASHES, st.occupancy);
-
+	int i;
 	// print hash multipliers
-	for(int i=0; i<NUM_HASHES; i++) {
+	for(i=0; i<NUM_HASHES; i++) {
 		printf("hash: %d\n", st.hashMultipliers[i]);
 	}
 
 	// print key:value pairs
 	printf("KEY:VALUE\n");
-	for(int i=0; i<pow(2, st.size); i++) {
+	for(i=0; i<pow(2, st.size); i++) {
 		printf("%d:%d\n",
 			st.buckets[i / BUCKET_SIZE].keyValue[i % BUCKET_SIZE],
 			st.buckets[i / BUCKET_SIZE].keyValue[(i % BUCKET_SIZE) + BUCKET_SIZE]);

@@ -15,14 +15,13 @@ probe.o: probe.c probe.h splash.h
 
 splash.o: splash.c
 
-
 default: probe
 
 clean:
-	rm -f *.o a.out core probe
+	rm -f *.o a.out core probe resultfile
 
 test:
-	./probe dumpfile
+	./probe dumpfile < probefile > resultfile
 
 all: clean probe test
 

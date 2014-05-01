@@ -11,7 +11,6 @@ int main (int argc, char *argv[])
 		printf("Usuage:\n\tprobe dumpfile");
 		exit(1);
 	}
-	buildSplashtable(argv[1]);
-
-
+	struct SplashTable st = buildSplashtable(argv[1]);
+	processProbes(st);
 }
