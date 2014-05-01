@@ -50,7 +50,7 @@ public class Splash {
         buildFromFile(splashTable, inputFile);
 
         // Load factor stats
-        System.out.printf("%f\n", splashTable.loadFactor());
+        // System.out.printf("%f\n", splashTable.loadFactor());
 
         // Accept probe file input
         probe(splashTable);
@@ -103,7 +103,7 @@ public class Splash {
             while((probe = probeInput.readLine()) != null) {
                 key = Integer.parseInt(probe);
                 value = t.get(key);
-                // System.out.printf("%d %d\n", key, value);
+                System.out.printf("%d %d\n", key, value);
             }
         } catch (IOException e) {
             e.printStackTrace();
