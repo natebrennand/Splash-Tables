@@ -49,6 +49,10 @@ public class Splash {
         // reading input file
         buildFromFile(splashTable, inputFile);
 
+
+        // dump file
+        splashTable.dump("");
+
         // Load factor stats
         // System.out.printf("%f\n", splashTable.loadFactor());
 

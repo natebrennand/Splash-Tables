@@ -38,7 +38,7 @@ class Table {
     }
 
     public float loadFactor() {
-        return (float)(this.occupation / (float)(Math.pow(2, this.numTableEntries)));
+        return this.occupation / (float)(Math.pow(2, this.numTableEntries));
     }
 
     /*  Set
